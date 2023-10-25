@@ -19,15 +19,29 @@ export class UserService {
     return this.users;
   }
   public getUserById(id: string): TUserDataBase {
-    const user = this.users.find(dto => dto._userId === Number(id));
-    return user;
+    try {
+      const user = this.users.find(dto => dto._userId === Number(id));
+      if (!user) {
+        throw new Error("No such a user!");
+      }
+      return user;
+    } catch (e) {
+      throw new Error(e.message);
+    }
   }
   public deleteUserById(id: string): TUserResponse {
-    const userForDelete = this.users.find(dto => dto._userId === Number(id));
-    this.users = this.users.filter(dto => dto._userId !== Number(id));
-    return {
-      body: userForDelete,
-      message: "User deleted!"
+    try {
+      const userForDelete = this.users.find(dto => dto._userId === Number(id));
+      if (!userForDelete) {
+       throw new Error("No such a user!");
+      }
+      this.users = this.users.filter(dto => dto._userId !== Number(id));
+      return {
+        body: userForDelete,
+        message: "User deleted!"
+      }
+    } catch (e) {
+      throw new Error(e.message);
     }
   }
   public updateUserById(id: string, dto: Partial<TUser>) {
