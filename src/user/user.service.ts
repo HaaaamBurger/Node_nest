@@ -30,4 +30,34 @@ export class UserService {
       message: "User deleted!"
     }
   }
+  public updateUserById(id: string, dto: Partial<TUser>) {
+    try {
+      const userForUpdate = this.users.find(dto => dto._userId === Number(id));
+      if (!userForUpdate) {
+        throw new Error("No such a user!");
+      }
+      let userForResponse: TUserDataBase | null = null
+      const updatedDataBase: TUserDataBase[] = [];
+       this.users.map(findUser => {
+        if (findUser._userId === Number(id)) {
+          findUser = {
+            name: dto.name || userForUpdate.name,
+            age: dto.age || userForUpdate.age,
+            status: dto.status || userForUpdate.status,
+            _userId: userForUpdate._userId
+          };
+          userForResponse = findUser;
+        }
+        updatedDataBase.push(findUser);
+      })
+
+      this.users = updatedDataBase;
+      return {
+        body: userForResponse,
+        message: "User updated!",
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
 }

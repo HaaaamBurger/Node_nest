@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { TUser } from 'src/types/user.type';
 import { UserService } from './user.service';
 import { TUserDataBase } from 'src/types/user_response.type';
@@ -14,6 +14,7 @@ export class UserController {
     const users = this.userService.getAllUsers();
     return users;
   }
+
   @Get("/:id")
   public getUserById(
     @Param() idParam: {id: string},
@@ -29,12 +30,23 @@ export class UserController {
     const userResponse = this.userService.createUser(body);
     return userResponse;
   }
+
   @Delete("/:id")
   public deleteUserById(
     @Param() idParam: {id: string},
   ) {
     const { id } = idParam;
     const userResponse = this.userService.deleteUserById(id);
+    return userResponse;
+  }
+
+  @Put("/:id")
+  public updateUserById(
+    @Param() idParam: {id: string},
+    @Body() body: Partial<TUser>,
+  ) {
+    const {id} = idParam;
+    const userResponse = this.userService.updateUserById(id, body);
     return userResponse;
   }
 
