@@ -28,7 +28,6 @@ export class UserService {
     return {
       body: userForDelete,
       message: "User deleted!"
-
     }
   }
 }
