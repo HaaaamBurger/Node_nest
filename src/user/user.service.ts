@@ -29,6 +29,7 @@ export class UserService {
       throw new Error(e.message);
     }
   }
+
   public deleteUserById(id: string): TUserResponse {
     try {
       const userForDelete = this.users.find(dto => dto._userId === Number(id));
@@ -44,6 +45,7 @@ export class UserService {
       throw new Error(e.message);
     }
   }
+
   public updateUserById(id: string, dto: Partial<TUser>) {
     try {
       const userForUpdate = this.users.find(dto => dto._userId === Number(id));
