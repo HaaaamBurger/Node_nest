@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { TUserResponse,TUserDataBase } from "../types/user_response.type"
-import { TUser } from 'src/types/user.type';
+import { Dto } from "./user_dto/dto"
 
 @Injectable()
 export class UserService {
-  private users = [] as TUserDataBase[];
+  private users = [];
 
-  public createUser(dto: TUser): TUserResponse {
+  public createUser(dto: Dto) {
     this.users.push({ ...dto, _userId: this.users.length + 1 });
     const cretedUser = this.users[this.users.length - 1];
 
@@ -15,10 +14,10 @@ export class UserService {
       message: "User created!"
     };
   }
-  public getAllUsers(): TUserDataBase[] {
+  public getAllUsers() {
     return this.users;
   }
-  public getUserById(id: string): TUserDataBase {
+  public getUserById(id: string) {
     try {
       const user = this.users.find(dto => dto._userId === Number(id));
       if (!user) {
@@ -30,7 +29,7 @@ export class UserService {
     }
   }
 
-  public deleteUserById(id: string): TUserResponse {
+  public deleteUserById(id: string) {
     try {
       const userForDelete = this.users.find(dto => dto._userId === Number(id));
       if (!userForDelete) {
@@ -46,14 +45,14 @@ export class UserService {
     }
   }
 
-  public updateUserById(id: string, dto: Partial<TUser>) {
+  public updateUserById(id: string, dto: Dto) {
     try {
       const userForUpdate = this.users.find(dto => dto._userId === Number(id));
       if (!userForUpdate) {
         throw new Error("No such a user!");
       }
-      let userForResponse: TUserDataBase | null = null
-      const updatedDataBase: TUserDataBase[] = [];
+      let userForResponse;
+      const updatedDataBase = [];
        this.users.map(findUser => {
         if (findUser._userId === Number(id)) {
           findUser = {

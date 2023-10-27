@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
-import { TUser } from 'src/types/user.type';
 import { UserService } from './user.service';
-import { TUserDataBase } from 'src/types/user_response.type';
+import { Dto } from "./user_dto/dto"
 
 @Controller('users')
 export class UserController {
@@ -10,25 +9,22 @@ export class UserController {
   }
 
   @Get("/")
-  public getAllUsers(): TUser[] {
-    const users = this.userService.getAllUsers();
-    return users;
+  public getAllUsers(){
+    return this.userService.getAllUsers();
   }
 
   @Get("/:id")
   public getUserById(
     @Param() idParam: {id: string},
-  ): TUserDataBase {
-    const user = this.userService.getUserById(idParam.id)
-    return user;
+  ) {
+    return this.userService.getUserById(idParam.id)
   }
 
   @Post()
   public createUser(
-    @Body() body: TUser,
+    @Body() body: Dto,
   ) {
-    const userResponse = this.userService.createUser(body);
-    return userResponse;
+    return this.userService.createUser(body);
   }
 
   @Delete("/:id")
@@ -36,18 +32,16 @@ export class UserController {
     @Param() idParam: {id: string},
   ) {
     const { id } = idParam;
-    const userResponse = this.userService.deleteUserById(id);
-    return userResponse;
+    return this.userService.deleteUserById(id);
   }
 
   @Put("/:id")
   public updateUserById(
     @Param() idParam: {id: string},
-    @Body() body: Partial<TUser>,
+    @Body() body: Dto,
   ) {
     const {id} = idParam;
-    const userResponse = this.userService.updateUserById(id, body);
-    return userResponse;
+    return this.userService.updateUserById(id, body);
   }
 
 }
