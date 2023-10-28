@@ -1,78 +1,57 @@
-import { Injectable } from '@nestjs/common';
-import { Dto } from "./user_dto/dto"
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Dto, DtoDataBase, DtoResponse } from "./user_dto/dto";
+import { UserRepository } from './user.repository';
+import { UserEntity } from 'src/database/entities/user.entity';
+import { DeleteResult } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  private users = [];
-
-  public createUser(dto: Dto) {
-    this.users.push({ ...dto, _userId: this.users.length + 1 });
-    const cretedUser = this.users[this.users.length - 1];
-
-    return {
-      body: cretedUser,
-      message: "User created!"
-    };
+  constructor(
+    private readonly userRepository: UserRepository,
+  ) {
   }
-  public getAllUsers() {
-    return this.users;
-  }
-  public getUserById(id: string) {
+
+  public async getAllUsers(): Promise<DtoDataBase[]> {
     try {
-      const user = this.users.find(dto => dto._userId === Number(id));
-      if (!user) {
-        throw new Error("No such a user!");
-      }
-      return user;
+      const users = await this.userRepository.find() as UserEntity[];
+      return users;
     } catch (e) {
-      throw new Error(e.message);
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  public deleteUserById(id: string) {
+  public async createUser(dto: Dto): Promise<DtoResponse> {
     try {
-      const userForDelete = this.users.find(dto => dto._userId === Number(id));
-      if (!userForDelete) {
-       throw new Error("No such a user!");
+      const findUser = await this.userRepository.findOne({ where: { email: dto.email } });
+      if (findUser) {
+        throw new HttpException("User already exists!", HttpStatus.BAD_REQUEST);
       }
-      this.users = this.users.filter(dto => dto._userId !== Number(id));
+      const createdUser = this.userRepository.create(dto);
+      await this.userRepository.save(createdUser);
       return {
-        body: userForDelete,
-        message: "User deleted!"
-      }
+        body: createdUser,
+        code: HttpStatus.CREATED
+      };
     } catch (e) {
-      throw new Error(e.message);
+      throw new HttpException(e.message, e.status);
     }
   }
 
-  public updateUserById(id: string, dto: Dto) {
+  public async deleteUserById(id: string) {
     try {
-      const userForUpdate = this.users.find(dto => dto._userId === Number(id));
-      if (!userForUpdate) {
-        throw new Error("No such a user!");
+      const findUser = await this.userRepository.findOneById(id);
+      if (!findUser) {
+        throw new HttpException("No such a user!", HttpStatus.BAD_REQUEST);
       }
-      let userForResponse;
-      const updatedDataBase = [];
-       this.users.map(findUser => {
-        if (findUser._userId === Number(id)) {
-          findUser = {
-            name: dto.name || userForUpdate.name,
-            age: dto.age || userForUpdate.age,
-            status: dto.status || userForUpdate.status,
-            _userId: userForUpdate._userId
-          };
-          userForResponse = findUser;
-        }
-        updatedDataBase.push(findUser);
-      })
-
-      this.users = updatedDataBase;
+      const deletedUser =  await this.userRepository.delete(id);
       return {
-        body: userForResponse,
-        message: "User updated!",
+        message: "User deleted!",
+        deleted_count: deletedUser.affected
       }
     } catch (e) {
-      throw new Error(e.message);
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST)
     }
   }
+
+
 }

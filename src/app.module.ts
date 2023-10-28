@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { CustomConfigModule } from './config/config.module';
 import { CustomConfigService } from './config/config.service';
-import { UserEntity } from "./database/entities/user.entity";
 import * as path from "node:path";
 @Module({
   imports: [
@@ -29,7 +26,7 @@ import * as path from "node:path";
       inject: [CustomConfigService],
     }),
     UserModule],
-  controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

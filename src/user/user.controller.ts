@@ -1,47 +1,52 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Delete, Param, HttpStatus } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Dto } from "./user_dto/dto"
+import { Dto, DtoDataBase, DtoResponse } from "./user_dto/dto"
+import { ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags("User")
 @Controller('users')
 export class UserController {
 
   constructor(private readonly userService: UserService) {
   }
-
-  @Get("/")
-  public getAllUsers(){
-    return this.userService.getAllUsers();
-  }
-
-  @Get("/:id")
-  public getUserById(
-    @Param() idParam: {id: string},
-  ) {
-    return this.userService.getUserById(idParam.id)
+  @Get()
+  public async getAllUsers(
+    @Res() res: any,
+  ): Promise<DtoDataBase[]> {
+    const users = await this.userService.getAllUsers();
+    return res.json(users);
   }
 
   @Post()
-  public createUser(
+  public async createUser(
     @Body() body: Dto,
-  ) {
-    return this.userService.createUser(body);
+    @Res() res: any
+  ): Promise<void> {
+    const user = await this.userService.createUser(body) as DtoResponse;
+    return res.status(HttpStatus.CREATED).json(user);
   }
 
   @Delete("/:id")
-  public deleteUserById(
-    @Param() idParam: {id: string},
-  ) {
+  public async deleteUserById(
+    @Param() idParam: { id: string },
+    @Res() res: any
+  ): Promise<void> {
     const { id } = idParam;
-    return this.userService.deleteUserById(id);
+    const deletedUserInfo = await this.userService.deleteUserById(id);
+    res.status(HttpStatus.OK).json(deletedUserInfo);
   }
 
-  @Put("/:id")
-  public updateUserById(
-    @Param() idParam: {id: string},
-    @Body() body: Dto,
+  @Get()
+  public async getUserById(
+    @Param() idParam: { id: string },
+    @Res() res: any
   ) {
-    const {id} = idParam;
-    return this.userService.updateUserById(id, body);
+    const { id } = idParam;
+
+    const user = await
+
+    res.status(HttpStatus.OK).json();
   }
 
 }
