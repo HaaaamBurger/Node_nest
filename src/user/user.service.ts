@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Dto, DtoDataBase, DtoResponse } from "./user_dto/dto";
+import { Dto, DtoDataBase, DtoResponse, UpdateAndDeleteDtoResponse } from "./user_dto/dto";
 import { UserRepository } from './user.repository';
 import { UserEntity } from 'src/database/entities/user.entity';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -37,21 +37,56 @@ export class UserService {
     }
   }
 
-  public async deleteUserById(id: string) {
+  public async deleteUserById(id: string): Promise<UpdateAndDeleteDtoResponse> {
     try {
       const findUser = await this.userRepository.findOneById(id);
       if (!findUser) {
         throw new HttpException("No such a user!", HttpStatus.BAD_REQUEST);
       }
-      const deletedUser =  await this.userRepository.delete(id);
+      const deletedUser =  await this.userRepository.delete(id) as DeleteResult;
       return {
         message: "User deleted!",
-        deleted_count: deletedUser.affected
+        body: findUser,
+        count: deletedUser.affected
       }
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST)
     }
   }
 
+  public async getUserById(id: string): Promise<DtoResponse> {
+    try {
+      const findUser = await this.userRepository.findOneById(id);
+      if(!findUser) {
+        throw new HttpException("No such a user!", HttpStatus.BAD_REQUEST);
+      }
+      return {
+        body: findUser,
+        code: HttpStatus.OK
+      };
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async updateUserById(id: string, dto: Partial<Dto>) {
+    try {
+      const findUser = await this.userRepository.findOneById(id);
+      if (!findUser) {
+        throw new HttpException("No such a user!", HttpStatus.BAD_REQUEST);
+      }
+
+      const userForUpdate = await this.userRepository.update(id, dto) as UpdateResult;
+
+      return {
+        message: "User updated!",
+        body: findUser,
+        count: userForUpdate.affected
+      }
+
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 
 }

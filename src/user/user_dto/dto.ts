@@ -24,9 +24,26 @@ export class Dto {
   email: string;
 }
 
-export class DtoDataBase extends UserEntity{
+export class DtoDataBase extends Dto{
+  @ApiProperty()
+  id: string;
+  @ApiProperty()
   createdAt: Date;
+  @ApiProperty()
   updatedAt: Date;
+}
+
+export class UpdateAndDeleteDtoResponse {
+  @ApiProperty()
+  message: string;
+  @ApiProperty()
+  body: Dto;
+  @ApiProperty()
+  count: number;
+}
+
+export class queryParam {
+
 }
 
 export class DtoResponse{
