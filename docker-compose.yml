@@ -20,7 +20,7 @@ services:
       - ./backend:/app
       - /app/node_modules
     ports:
-      - "4444:4444"
+      - "5001:5001"
     restart: on-failure
     command: sh -c "npm run start:dev"
 

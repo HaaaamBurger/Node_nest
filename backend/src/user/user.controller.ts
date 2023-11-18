@@ -10,7 +10,7 @@ export class UserController {
 
   constructor(private readonly userService: UserService) {
   }
-  @Get()
+  @Get("/")
   @ApiResponse({ status: HttpStatus.OK, type: DtoDataBase })
   public async getAllUsers(
     @Res() res: any,
