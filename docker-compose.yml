@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: "march-2023"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_USER: "user"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/
+    ports:
+      - "5555:5432"
+    restart: on-failure
