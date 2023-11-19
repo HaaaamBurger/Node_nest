@@ -24,5 +24,4 @@ export class CustomConfigService {
   get db_database(): string {
       return this.configs.db_database;
     }
-
 }
