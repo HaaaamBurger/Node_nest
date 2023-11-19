@@ -24,6 +24,12 @@ services:
     restart: on-failure
     command: sh -c "npm run start:dev"
 
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      -
+
   redis:
     image: redis:alpine
     restart: on-failure
