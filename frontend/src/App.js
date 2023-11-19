@@ -9,8 +9,6 @@ const App = () => {
       .then(({data}) => setUsers(data))
   }, []);
 
-  console.log(users);
-
   return (
     <div>
       {
